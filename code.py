@@ -37,16 +37,28 @@ response = requests.get(website_url, headers=HEADERS)
 soup = BeautifulSoup(response.content, 'html.parser')
 
 if response:
-    print(response.status_code, 'OK')
+    print(response.status_code, 'OK', end='\n\n')
 
-print('Translations')
-
-# Printing the translations to the required word
+# Getting the translations to the required word
 word_translations = soup.find_all('span', {'class': 'display-term'})
 word_translations = [word.text for word in word_translations]
-print(word_translations)
 
-# Printing the examples
-examples = soup.find_all('span', {'class': 'text'})
-examples = [example.text for example in examples]
-print(examples)
+# Printing only the first 5 provided translations
+print(f'{LANGUAGE_LOOKUP[lang_to].title()} Translations:')
+for word in word_translations[:5]:
+    print(word)
+print()
+
+# Getting the examples
+examples = soup.find_all('div', {'class': ['src', 'trg']})
+examples = [example.text.strip() for example in examples]
+examples = [example for example in examples if example != '']
+
+# Separating the examples according to the language
+lang_from_examples = examples[::2]
+lang_to_examples = examples[1::2]
+
+# Printing only the first 5 provided examples
+print(f'{LANGUAGE_LOOKUP[lang_to].title()} Examples:')
+for i in range(5):
+    print(lang_from_examples[i] + '\n' + lang_to_examples[i] + '\n')
